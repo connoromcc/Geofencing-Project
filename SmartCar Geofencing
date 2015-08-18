@@ -1,0 +1,62 @@
+//checks if a point is in defined space
+public bool GeofencePoint(double side-1, double side-2)
+{
+            int sides = this.Count() - 1;
+            int j = sides - 1;
+            bool Status = false;
+            for (int i = 0; i < sides; i++)
+            {
+                if (myPts[i].side-2 < side-2 && myPts[j].side-2 >= side-2 ||
+			myPts[j].side-2 < Y && myPts[i].side-2 >= side-2)
+                {
+                    if (myPts[i].side-1 + (side-2 - myPts[i].side-2) /
+			(myPts[j].side-2 - myPts[i].side-2) * (myPts[j].side-1 - myPts[i].X) < side-1)
+                    {
+                        Status = !Status ;
+                    }
+                }
+                j = i;
+            }
+            return Status;
+}
+
+//defining the fence
+private void loadData()
+{
+    DataSet ds = new DataSet();
+    ds.ReadXml("PolygonPoints.XML");
+
+    foreach (DataRow dr in ds.Tables[0].Rows)
+    {
+        Point p = new Point();
+
+        //Convert Latitude into degrees
+        String Lat = dr[0].ToString();
+        double LatSec = Double.Parse(Lat.Substring(4, 4)) / 6000;
+        double LatMin = (Double.Parse(Lat.Substring(2, 2)) + LatSec) / 60;
+        p.X = Double.Parse(Lat.Substring(0, 2)) + LatMin;
+
+        //Convert Longitude into degrees
+        String Long = dr[1].ToString();
+        double LongSec = Double.Parse(Long.Substring(5, 4)) / 6000;
+        double LongMin = (Double.Parse(Long.Substring(3, 2)) + LongSec) / 60;
+        p.Y = Double.Parse(Long.Substring(0, 3)) + LongMin;
+        points.Add(p);
+    }
+}
+
+//Car Search
+PolyGon myHouse = new PolyGon(points);
+bool pointStatus = myHouse.FindPoint(Double.Parse(txtLat.Text.ToString()),
+		Double.Parse(txtLang.Text.ToString()));
+if(pointStatus)
+{
+    lblResult.Text = "Car at home.";
+}
+else
+    {
+    lblResult.Text = "Car not home.";
+    }
+
+
+//Notification for user of leaving zone
